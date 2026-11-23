@@ -155,3 +155,34 @@ vite.config.ts.timestamp-*
 .nx/cache
 .nx/workspace-data
 .nx/migrate-runs
+
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# AWS credentials and private keys
+.aws/
+*.pem
+*.key
+*.p12
+
+# IDE
+.vscode/
+.idea/
