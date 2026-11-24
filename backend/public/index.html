@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AWS File Processor</title>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js" defer></script>
+</head>
+
+<body>
+
+    <header class="header">
+        <h1>AWS File Processor</h1>
+        <p>Plateforme de traitement automatisé de fichiers CSV</p>
+    </header>
+
+    <main class="container">
+
+        <!-- Importation du fichier -->
+        <section class="card">
+            <h2>Importer un fichier CSV</h2>
+
+            <form id="uploadForm">
+                <div class="upload-zone">
+                    <label for="csvFile">
+                        Sélectionner un fichier CSV
+                    </label>
+
+                    <input
+                        type="file"
+                        id="csvFile"
+                        name="file"
+                        accept=".csv"
+                        required
+                    >
+
+                    <p>Format accepté : CSV — Maximum 5 Mo</p>
+                </div>
+
+                <button type="submit" id="uploadButton">
+                    Lancer le traitement
+                </button>
+            </form>
+
+            <p id="uploadMessage" role="status"></p>
+        </section>
+
+        <!-- Consultation du statut -->
+        <section class="card">
+            <h2>Consulter un traitement</h2>
+
+            <form id="statusForm">
+                <label for="fileId">
+                    Identifiant du traitement
+                </label>
+
+                <input
+                    type="text"
+                    id="fileId"
+                    placeholder="Saisir l'identifiant du fichier"
+                    required
+                >
+
+                <button type="submit">
+                    Consulter le statut
+                </button>
+            </form>
+
+            <p id="statusMessage" role="status"></p>
+        </section>
+
+        <!-- Résultats du traitement -->
+        <section class="card" id="resultsSection" hidden>
+
+            <h2>Résultats du traitement</h2>
+
+            <p>
+                Fichier : <strong id="fileName">-</strong>
+            </p>
+
+            <p>
+                Statut : <strong id="processingStatus">-</strong>
+            </p>
+
+            <div class="statistics">
+
+                <div class="stat-card">
+                    <h3>Nombre de lignes</h3>
+                    <span id="totalRows">0</span>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Lignes valides</h3>
+                    <span id="validRows">0</span>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Lignes invalides</h3>
+                    <span id="invalidRows">0</span>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Produits distincts</h3>
+                    <span id="distinctProducts">0</span>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Chiffre d'affaires total</h3>
+                    <span id="totalRevenue">0</span>
+                </div>
+
+            </div>
+
+            <h3>Erreurs détectées</h3>
+            <ul id="errorList"></ul>
+
+            <h3>Rapport JSON</h3>
+
+            <pre id="jsonReport"></pre>
+
+            <button type="button" id="downloadButton">
+                Télécharger le rapport JSON
+            </button>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>
+            AWS File Processor
+        </p>
+    </footer>
+
+</body>
+</html>

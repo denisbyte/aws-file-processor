@@ -1,3 +1,4 @@
+import path from "node:path";
 import express from "express";
 import multer from "multer";
 import { randomUUID } from "node:crypto";
@@ -14,7 +15,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-
+// Distribution des fichiers statiques du frontend
+const publicPath = path.join(import.meta.dirname, "../public");
+app.use(express.static(publicPath));
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
