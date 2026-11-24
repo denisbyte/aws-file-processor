@@ -1,94 +1,96 @@
 
 from diagrams import Diagram, Cluster, Edge
-from diagrams.aws.compute import EC2, Lambda
+from diagrams.onprem.client import User
+from diagrams.onprem.iac import Terraform
+from diagrams.aws.compute import EC2
 from diagrams.aws.storage import S3
 from diagrams.aws.security import IAM
 from diagrams.aws.management import Cloudwatch
-from diagrams.onprem.client import Users
-from diagrams.onprem.iac import Terraform
 
 
 graph_attr = {
+    "rankdir": "LR",
+    "splines": "polyline",
+    "nodesep": "0.7",
+    "ranksep": "1.2",
+    "pad": "0.5",
+    "fontname": "Arial",
     "fontsize": "18",
-    "pad": "0.6",
-    "nodesep": "0.9",
-    "ranksep": "1.3",
-    "splines": "spline",
     "compound": "true",
 }
 
 with Diagram(
-    "Plateforme AWS de traitement automatise de fichiers CSV",
+    "AWS File Processor - Architecture",
     filename="docs/architecture",
     show=False,
-    direction="LR",
     outformat="png",
+    direction="LR",
     graph_attr=graph_attr,
 ):
 
-    user = Users("Utilisateur")
+    # Acteurs et outils externes
+    user = User("Utilisateur\nNavigateur Web")
+    terraform = Terraform("Terraform\nProvisionnement AWS")
 
-    with Cluster("Infrastructure AWS") as aws:
+    # Infrastructure AWS
+    with Cluster("AWS Cloud"):
 
-        with Cluster("Application web"):
-            ec2_role = IAM("Role IAM EC2")
-            ec2 = EC2("EC2\nNode.js / Express")
+        with Cluster("Application"):
+            iam = IAM(
+                "IAM Role EC2\n"
+                "Permissions S3"
+            )
 
-        with Cluster("Traitement serverless"):
-            lambda_role = IAM("Role IAM Lambda")
-            processor = Lambda("Lambda Node.js\nTraitement CSV")
+            ec2 = EC2(
+                "Amazon EC2\n"
+                "Node.js / Express\n"
+                "Traitement CSV"
+            )
 
-        with Cluster("Stockage Amazon S3"):
-            bucket = S3("Bucket S3\ninput/ et output/")
+        with Cluster("Stockage et supervision"):
+            s3 = S3(
+                "Amazon S3\n"
+                "input/ : CSV\n"
+                "output/ : JSON"
+            )
 
-        cloudwatch = Cloudwatch("CloudWatch\nLogs et monitoring")
+            cloudwatch = Cloudwatch(
+                "CloudWatch\n"
+                "Metriques S3"
+            )
 
-        # Permissions IAM
-        ec2_role >> Edge(
-            style="dashed",
-            color="gray"
+        # Permissions IAM pour EC2
+        iam >> Edge(
+            color="#888888",
+            penwidth="1.5"
         ) >> ec2
 
-        lambda_role >> Edge(
-            style="dashed",
-            color="gray"
-        ) >> processor
+        # Supervision du stockage S3
+        s3 >> Edge(
+            color="#888888",
+            penwidth="1.5"
+        ) >> cloudwatch
 
-    # Flux applicatif
+    # Flux utilisateur vers application
     user >> Edge(
-    label="Upload CSV",
-    labeldistance="2",
-    minlen="2"
+        label="HTTP / Upload CSV",
+        color="#2874A6",
+        penwidth="2"
     ) >> ec2
 
+    # Stockage CSV et JSON
     ec2 >> Edge(
-        label="PutObject : input/"
-    ) >> bucket
+        color="#238B45",
+        penwidth="2"
+    ) >> s3
 
-    bucket >> Edge(
-        label="ObjectCreated : input/"
-    ) >> processor
-
-    processor >> Edge(
-        label="PutObject : output/"
-    ) >> bucket
-
-    bucket >> Edge(
-        label="GetObject : output/",
-        style="dashed"
-    ) >> ec2
-
-    processor >> Edge(
-        label="Logs"
-    ) >> cloudwatch
-
-    # Terraform : une seule liaison vers le groupe AWS
-    terraform = Terraform("Terraform\nInfrastructure as Code")
-
+    # Provisionnement Terraform
+    # Liaison symbolique vers l'infrastructure AWS
     terraform >> Edge(
-        label="Provisionnement AWS",
+        label="Provisionnement",
+        color="#8056D9",
         style="dotted",
-        color="blue",
-        lhead=aws.name,
-        constraint="false"
-    ) >> ec2
+        penwidth="1.2",
+        constraint="false",
+        lhead="cluster_AWS Cloud"
+    ) >> iam

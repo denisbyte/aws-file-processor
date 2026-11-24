@@ -186,3 +186,5 @@ override.tf.json
 # IDE
 .vscode/
 .idea/
+# Archives générées
+*.zip
